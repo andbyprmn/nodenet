@@ -13,7 +13,7 @@ var keyValueStore = make(map[string]string)
 
 func init() {
 	var err error
-	db, err = sql.Open("postgres", "user=postgres dbname=nodenet sslmode=disable")
+	db, err = sql.Open("db_name", "your_connection_setting_here")
 	if err != nil {
 		panic(err)
 	}
@@ -28,6 +28,6 @@ func GetKeyValue(key string) (string, error) {
 
 func SetKeyValue(key, value string) error {
 	keyValueStore[key] = value
-	_, err := db.Exec("INSERT INTO kv_store (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = $2", key, value)
+	_, err := db.Exec("YOUR_QUERY_HERE")
 	return err
 }
