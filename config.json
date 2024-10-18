@@ -1,0 +1,9 @@
+{
+    "port": "8080",
+    "log_file": "server.log",
+    "db_host": "localhost",
+    "db_port": "5432",
+    "db_user": "your_username",
+    "db_pass": "your_password",
+    "db_name": "your_database"
+}

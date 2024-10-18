@@ -6,27 +6,37 @@ import (
 	"nodenet/config"
 	"nodenet/handler"
 	customLog "nodenet/log"
+	"nodenet/model"
 
 	"github.com/julienschmidt/httprouter"
 )
 
 func main() {
 	// Load configuration
-	conf := config.LoadConfig()
-
-	// Initialize logger
-	err := customLog.InitLogger(conf.LogFile)
+	cfg, err := config.LoadConfig("config.json")
 	if err != nil {
-		log.Fatalf("Failed to initialize logger: %v", err)
+		log.Fatalf("Error loading config: %v", err)
 	}
-	defer customLog.CloseLogger()
 
-	// Initialize HTTP router
+	// Set up logging
+	customLog.SetupLogger(cfg.LogFile)
+
+	// Create a new store
+	store, err := model.NewStore(cfg.DBHost, cfg.DBPort, cfg.DBUser, cfg.DBPass, cfg.DBName)
+	if err != nil {
+		log.Fatalf("Error connecting to database: %v", err)
+	}
+
+	// Create a new router
 	router := httprouter.New()
-	router.GET("/api/v1/keys/:key", handler.GetKey)
-	router.POST("/api/v1/keys", handler.SetKey)
 
-	// Start HTTP server
-	log.Printf("Starting server on port %s...", conf.Port)
-	log.Fatal(http.ListenAndServe(":"+conf.Port, router))
+	// Create an API instance and register routes
+	api := handler.NewAPI(store)
+	api.RegisterRoutes(router)
+
+	// Start the server
+	log.Printf("Starting server on port %s...", cfg.Port)
+	if err := http.ListenAndServe(":"+cfg.Port, router); err != nil {
+		log.Fatalf("Error starting server: %v", err)
+	}
 }

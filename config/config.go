@@ -2,27 +2,31 @@ package config
 
 import (
 	"encoding/json"
-	"log"
 	"os"
 )
 
+// Config struct untuk menyimpan konfigurasi aplikasi
 type Config struct {
-	//your config in here ...
+	Port    string `json:"port"`
+	LogFile string `json:"log_file"`
+	DBHost  string `json:"db_host"`
+	DBPort  string `json:"db_port"`
+	DBUser  string `json:"db_user"`
+	DBPass  string `json:"db_pass"`
+	DBName  string `json:"db_name"`
 }
 
-func LoadConfig() Config {
-	file, err := os.Open("your_config.json")
+// LoadConfig untuk memuat konfigurasi dari file JSON
+func LoadConfig(filePath string) (Config, error) {
+	var config Config
+	file, err := os.Open(filePath)
 	if err != nil {
-		log.Fatalf("Error opening config file: %v", err)
+		return config, err
 	}
 	defer file.Close()
 
-	decoder := json.NewDecoder(file)
-	config := Config{}
-	err = decoder.Decode(&config)
-	if err != nil {
-		log.Fatalf("Error decoding config file: %v", err)
+	if err := json.NewDecoder(file).Decode(&config); err != nil {
+		return config, err
 	}
-
-	return config
+	return config, nil
 }
