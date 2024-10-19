@@ -1,0 +1,9 @@
+{
+    "port": "8080",
+    "initial_data": {
+      "status": "active",
+      "task": "pending",
+      "message": "Hello, Node!"
+    }
+  }
+  
